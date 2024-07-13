@@ -7,18 +7,14 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-html {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-html {
-  box-sizing: border-box;
-}
+
 *,
 *:before,
 *:after {
   box-sizing: inherit;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 body {
@@ -27,6 +23,8 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: black;
+  color: white;
 }
 
 code {
@@ -36,10 +34,6 @@ code {
 
 html,
 body {
-  height: 100%;
-  margin: 0;
-  line-height: 1.5;
-  color: #121212;
 }
 textarea,
 input,
@@ -47,11 +41,11 @@ button {
   font-size: 1rem;
   font-family: inherit;
   border: none;
-  border-radius: 8px;
-  padding: 0.5rem 0.75rem;
+  /* border-radius: 8px; */
+  padding: 8px;
   box-shadow: 0 0px 1px hsla(0, 0%, 0%, 0.2), 0 1px 2px hsla(0, 0%, 0%, 0.2);
   background-color: white;
-  line-height: 1.5;
+
   margin: 0;
 }
 button {
@@ -69,8 +63,22 @@ button:active {
   box-shadow: 0 0px 1px hsla(0, 0%, 0%, 0.4);
   transform: translateY(1px);
 }
+ul {
+  all: unset;
+  list-style: none;
+}
 
-#contact h1 {
+a {
+  all: unset;
+  cursor: pointer;
+}
+a:hover {
+  text-decoration: underline;
+}
+
+#root {
+}
+/* #contact h1 {
   display: flex;
   align-items: flex-start;
   gap: 1rem;
@@ -183,7 +191,7 @@ form[action$='destroy'] button {
   position: absolute;
   left: 0.625rem;
   top: 0.75rem;
-}
+} */
 
 @keyframes spin {
   from {
@@ -193,7 +201,7 @@ form[action$='destroy'] button {
     transform: rotate(360deg);
   }
 }
-
+/* 
 #sidebar nav {
   flex: 1;
   overflow: auto;
@@ -393,4 +401,4 @@ i {
   align-items: center;
   justify-content: center;
   width: 100%;
-}
+} */

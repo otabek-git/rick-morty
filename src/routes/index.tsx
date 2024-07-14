@@ -1,18 +1,11 @@
-import { keepPreviousData, useQuery } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
-import { Outlet } from 'react-router-dom';
+import { Link, Outlet } from 'react-router-dom';
+import { FetchCharactersResponse, fetchCharacters } from './api/api';
 
-const fetchCharacters = async (page: number) => {
-  const res = await fetch(
-    `https://rickandmortyapi.com/api/character/?page=${page}`
-  );
-  const data = await res.json();
-  console.log(data);
-  return data;
-};
 export const Index = () => {
   const [page, setPage] = useState(1);
-  const characterQueryAsync = useQuery({
+  const characterQueryAsync = useQuery<FetchCharactersResponse>({
     queryKey: ['character', page],
     queryFn: async () => {
       return fetchCharacters(page);
@@ -25,30 +18,43 @@ export const Index = () => {
   if (characterQueryAsync.isError) {
     return <div>{characterQueryAsync.error.message}</div>;
   }
-  console.log(characterQueryAsync.data);
+  if (!characterQueryAsync.data) {
+    return null;
+  }
+
   return (
     <>
       <section className="px-3 pt-5">
-        <ul className="flex gap-4 text-base flex-wrap items-center justify-center">
+        <ul className="flex gap-4 text-base flex-wrap items-center justify-center pb-4">
           {characterQueryAsync.data.results.map((character) => (
-            <li className="flex  flex-col" key={character.id}>
-              <img
-                className="w-[200px] h-[200px] shadow-lg"
-                src={character.image}
-                alt=""
-              />
-              <div className=" outline-dotted mt-2 p-1 outline-green-600">
-                <span className="pt-1">{character.name}</span>
-                <div className="flex text-xs gap-3 text-cyan-400">
-                  <span> {character.status === 'Alive' ? '❤️' : '💀'}</span>
-                  <span> {character.status}</span>
-                  <span>{character.species}</span>
+            <li
+              className="flex hover:outline-orange-400 hover:outline-4 hover:outline hover:text-orange-400"
+              key={character.id}
+            >
+              <Link to={`/character/${character.id}`}>
+                <img
+                  className="lg:w-[200px] lg:h-[200px] w-[130px] h-[130px]shadow-lg"
+                  src={character.image}
+                  alt=""
+                />
+                <div className=" mt-2 p-1 ">
+                  <span className="pt-1 md:hidden">
+                    {character.name.length > 12
+                      ? character.name.substring(0, 12) + '...'
+                      : character.name}
+                  </span>
+                  <span className="pt-1 hidden md:block">{character.name}</span>
+                  <div className="flex text-xs gap-1 text-cyan-400">
+                    <span> {character.status === 'Alive' ? '❤️' : '💀'}</span>
+                    <span> {character.status}</span>
+                    <span>{character.species}</span>
+                  </div>
                 </div>
-              </div>
+              </Link>
             </li>
           ))}
         </ul>
-        <div className="flex justify-center mt-4 mb-4 text-base">
+        <div className="flex justify-center mt-4 mb-10 text-base">
           <button
             onClick={() => setPage((old) => Math.max(old - 1, 1))}
             disabled={page === 1}

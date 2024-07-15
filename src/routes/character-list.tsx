@@ -9,7 +9,7 @@ import {
 import { useDebounce } from '@uidotdev/usehooks';
 import { Loading } from './components/loading';
 
-export const Index = () => {
+export const CharacterList = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const params = new URLSearchParams(location.search);

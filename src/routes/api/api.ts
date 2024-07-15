@@ -1,4 +1,4 @@
-type Character = {
+export type Character = {
   id: number;
   name: string;
   status: string;
@@ -51,9 +51,12 @@ export const fetchCharacterDetails = async (
   return data;
 };
 
-export const searchCharacterByNameAsync = async (name: string) => {
+export const searchCharacterByNameAsync = async (
+  page: number,
+  name: string
+) => {
   const res = await fetch(
-    `https://rickandmortyapi.com/api/character/?name=${name}`
+    `https://rickandmortyapi.com/api/character/?page=${page}&name=${name}`
   );
   if (!res.ok) {
     throw new Error('Network response was not ok');

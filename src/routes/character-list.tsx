@@ -1,7 +1,8 @@
-import { UseQueryResult, useQuery } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import {
+  Character,
   FetchCharactersResponse,
   fetchCharacters,
   searchCharacterByNameAsync,
@@ -26,23 +27,27 @@ export const CharacterList = () => {
   const [searchByName, setSearchByName] = useState('');
   const debouncedSearchTerm = useDebounce(searchByName, 300);
   const searchByNameAsync = useQuery({
-    queryKey: ['searchByName', debouncedSearchTerm],
-    queryFn: async () => await searchCharacterByNameAsync(debouncedSearchTerm),
+    queryKey: ['searchByName', debouncedSearchTerm, currentPage],
+    queryFn: async () =>
+      await searchCharacterByNameAsync(currentPage, debouncedSearchTerm),
     enabled: debouncedSearchTerm.length > 0,
     staleTime: 5000,
   });
+  console.log(searchByNameAsync.data);
   const setPage = (newPage: number) => {
     params.set('page', newPage.toString());
     navigate(`?${params.toString()}`);
   };
+  const activeQueryAsync = debouncedSearchTerm
+    ? searchByNameAsync
+    : characterQueryAsync;
 
-  if (characterQueryAsync.isError) {
-    return <div>{characterQueryAsync.error.message}</div>;
+  if (activeQueryAsync.isError) {
+    return <div>{activeQueryAsync.error.message}</div>;
   }
-  if (!characterQueryAsync.data) {
+  if (!activeQueryAsync.data) {
     return null;
   }
-  // console.log(searchByNameAsync.data);
 
   return (
     <>
@@ -61,12 +66,8 @@ export const CharacterList = () => {
       </div>
 
       <section className="px-3 pt-5">
-        <SearchTermResults
-          searchByNameAsync={searchByNameAsync}
-          debouncedSearchTerm={debouncedSearchTerm}
-        />
         <ul className="flex gap-4 text-base flex-wrap items-center justify-center pb-4">
-          {characterQueryAsync.data.results.map((character) => (
+          {activeQueryAsync.data.results.map((character: Character) => (
             <li
               className="flex animate-fadeInUp hover:outline-orange-400 hover:outline-4 hover:outline hover:text-orange-400"
               key={character.id}
@@ -105,10 +106,10 @@ export const CharacterList = () => {
           <span className="px-2 flex items-center">{currentPage}</span>
           <button
             onClick={() => {
-              if (!characterQueryAsync.data.info.next) return;
+              if (!activeQueryAsync.data.info.next) return;
               setPage(currentPage + 1);
             }}
-            disabled={!characterQueryAsync.data.info.next}
+            disabled={!activeQueryAsync.data.info.next}
             className="px-4 py-2 enabled:hover:bg-gray-300 rounded disabled:opacity-50 text-black bg-white"
           >
             Next
@@ -116,36 +117,6 @@ export const CharacterList = () => {
         </div>
         <Outlet />
       </section>
-    </>
-  );
-};
-type SearchTermResultsProps = {
-  searchByNameAsync: UseQueryResult<FetchCharactersResponse, Error>;
-  debouncedSearchTerm: string;
-};
-
-const SearchTermResults = (props: SearchTermResultsProps) => {
-  return (
-    <>
-      {/* {props.searchByNameAsync.isLoading && <Loading />}
-      {props.searchByNameAsync.isError && (
-        <div>{props.searchByNameAsync.error.message}</div>
-      )} */}
-      {props.debouncedSearchTerm.length > 0 && props.searchByNameAsync.data && (
-        <ul className="flex gap-2 flex-wrap animate-fadeInUp">
-          {props.searchByNameAsync.data.results.map((character) => (
-            <li key={character.id}>
-              <Link className="flex flex-col" to={`/character/${character.id}`}>
-                <img
-                  className="w-[200px] h-[200px]"
-                  src={character.image}
-                ></img>
-                <span>{character.name}</span>
-              </Link>
-            </li>
-          ))}
-        </ul>
-      )}
     </>
   );
 };

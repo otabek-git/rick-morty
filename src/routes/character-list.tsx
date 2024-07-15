@@ -33,7 +33,7 @@ export const CharacterList = () => {
   });
   const setPage = (newPage: number) => {
     params.set('page', newPage.toString());
-    navigate(`?${params.toString()}`, { replace: true });
+    navigate(`?${params.toString()}`);
   };
 
   if (characterQueryAsync.isError) {

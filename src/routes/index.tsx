@@ -1,8 +1,4 @@
-import {
-  UseQueryResult,
-  keepPreviousData,
-  useQuery,
-} from '@tanstack/react-query';
+import { UseQueryResult, useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import { Link, Outlet } from 'react-router-dom';
 import {
@@ -12,7 +8,6 @@ import {
 } from './api/api';
 import { useDebounce } from '@uidotdev/usehooks';
 import { Loading } from './components/loading';
-import { Search } from 'lucide-react';
 
 export const Index = () => {
   const [page, setPage] = useState(1);
@@ -32,9 +27,6 @@ export const Index = () => {
     staleTime: 5000,
   });
 
-  // if (characterQueryAsync.isLoading) {
-  //   return <Loading />;
-  // }
   if (characterQueryAsync.isError) {
     return <div>{characterQueryAsync.error.message}</div>;
   }

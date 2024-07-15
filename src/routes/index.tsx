@@ -1,6 +1,6 @@
 import { UseQueryResult, useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
-import { Link, Outlet } from 'react-router-dom';
+import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import {
   FetchCharactersResponse,
   fetchCharacters,
@@ -10,11 +10,16 @@ import { useDebounce } from '@uidotdev/usehooks';
 import { Loading } from './components/loading';
 
 export const Index = () => {
-  const [page, setPage] = useState(1);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const params = new URLSearchParams(location.search);
+  const currentPage = parseInt(params.get('page') || '1', 10);
+  console.log(currentPage);
+
   const characterQueryAsync = useQuery<FetchCharactersResponse>({
-    queryKey: ['character', page],
+    queryKey: ['character', currentPage],
     queryFn: async () => {
-      return fetchCharacters(page);
+      return fetchCharacters(currentPage);
     },
   });
 
@@ -26,6 +31,10 @@ export const Index = () => {
     enabled: debouncedSearchTerm.length > 0,
     staleTime: 5000,
   });
+  const setPage = (newPage: number) => {
+    params.set('page', newPage.toString());
+    navigate(`?${params.toString()}`, { replace: true });
+  };
 
   if (characterQueryAsync.isError) {
     return <div>{characterQueryAsync.error.message}</div>;
@@ -33,7 +42,7 @@ export const Index = () => {
   if (!characterQueryAsync.data) {
     return null;
   }
-  console.log(searchByNameAsync.data);
+  // console.log(searchByNameAsync.data);
 
   return (
     <>
@@ -87,17 +96,17 @@ export const Index = () => {
         </ul>
         <div className="flex justify-center mt-4 mb-10 text-base">
           <button
-            onClick={() => setPage((old) => Math.max(old - 1, 1))}
-            disabled={page === 1}
+            onClick={() => setPage(Math.max(currentPage - 1, 1))}
+            disabled={currentPage === 1}
             className="px-1 py-1 text-black bg-white rounded disabled:opacity-50 enabled:hover:bg-gray-300"
           >
             previous
           </button>
-          <span className="px-2 flex items-center">{page}</span>
+          <span className="px-2 flex items-center">{currentPage}</span>
           <button
             onClick={() => {
               if (!characterQueryAsync.data.info.next) return;
-              setPage((old) => old + 1);
+              setPage(currentPage + 1);
             }}
             disabled={!characterQueryAsync.data.info.next}
             className="px-4 py-2 enabled:hover:bg-gray-300 rounded disabled:opacity-50 text-black bg-white"

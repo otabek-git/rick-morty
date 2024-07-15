@@ -1,7 +1,18 @@
-import { useQuery } from '@tanstack/react-query';
+import {
+  UseQueryResult,
+  keepPreviousData,
+  useQuery,
+} from '@tanstack/react-query';
 import { useState } from 'react';
 import { Link, Outlet } from 'react-router-dom';
-import { FetchCharactersResponse, fetchCharacters } from './api/api';
+import {
+  FetchCharactersResponse,
+  fetchCharacters,
+  searchCharacterByNameAsync,
+} from './api/api';
+import { useDebounce } from '@uidotdev/usehooks';
+import { Loading } from './components/loading';
+import { Search } from 'lucide-react';
 
 export const Index = () => {
   const [page, setPage] = useState(1);
@@ -12,23 +23,51 @@ export const Index = () => {
     },
   });
 
-  if (characterQueryAsync.isLoading) {
-    return <div>loading...</div>;
-  }
+  const [searchByName, setSearchByName] = useState('');
+  const debouncedSearchTerm = useDebounce(searchByName, 300);
+  const searchByNameAsync = useQuery({
+    queryKey: ['searchByName', debouncedSearchTerm],
+    queryFn: async () => await searchCharacterByNameAsync(debouncedSearchTerm),
+    enabled: debouncedSearchTerm.length > 0,
+    staleTime: 5000,
+  });
+
+  // if (characterQueryAsync.isLoading) {
+  //   return <Loading />;
+  // }
   if (characterQueryAsync.isError) {
     return <div>{characterQueryAsync.error.message}</div>;
   }
   if (!characterQueryAsync.data) {
     return null;
   }
+  console.log(searchByNameAsync.data);
 
   return (
     <>
+      <div className="flex items-center justify-center">
+        <div className="flex mt-4 items-center bg-white  ">
+          {/* <Search color="black" width={16} height={16} className="" />   */}
+          <input
+            type="text"
+            placeholder="Search"
+            value={searchByName}
+            onChange={(e) => setSearchByName(e.target.value)}
+            className="relative z-10 "
+          />
+        </div>
+        {searchByNameAsync.isLoading && <Loading />}
+      </div>
+
       <section className="px-3 pt-5">
+        <SearchTermResults
+          searchByNameAsync={searchByNameAsync}
+          debouncedSearchTerm={debouncedSearchTerm}
+        />
         <ul className="flex gap-4 text-base flex-wrap items-center justify-center pb-4">
           {characterQueryAsync.data.results.map((character) => (
             <li
-              className="flex hover:outline-orange-400 hover:outline-4 hover:outline hover:text-orange-400"
+              className="flex animate-fadeInUp hover:outline-orange-400 hover:outline-4 hover:outline hover:text-orange-400"
               key={character.id}
             >
               <Link to={`/character/${character.id}`}>
@@ -76,6 +115,36 @@ export const Index = () => {
         </div>
         <Outlet />
       </section>
+    </>
+  );
+};
+type SearchTermResultsProps = {
+  searchByNameAsync: UseQueryResult<FetchCharactersResponse, Error>;
+  debouncedSearchTerm: string;
+};
+
+const SearchTermResults = (props: SearchTermResultsProps) => {
+  return (
+    <>
+      {/* {props.searchByNameAsync.isLoading && <Loading />}
+      {props.searchByNameAsync.isError && (
+        <div>{props.searchByNameAsync.error.message}</div>
+      )} */}
+      {props.debouncedSearchTerm.length > 0 && props.searchByNameAsync.data && (
+        <ul className="flex gap-2 flex-wrap animate-fadeInUp">
+          {props.searchByNameAsync.data.results.map((character) => (
+            <li key={character.id}>
+              <Link className="flex flex-col" to={`/character/${character.id}`}>
+                <img
+                  className="w-[200px] h-[200px]"
+                  src={character.image}
+                ></img>
+                <span>{character.name}</span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      )}
     </>
   );
 };

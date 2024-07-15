@@ -50,3 +50,14 @@ export const fetchCharacterDetails = async (
   const data = await res.json();
   return data;
 };
+
+export const searchCharacterByNameAsync = async (name: string) => {
+  const res = await fetch(
+    `https://rickandmortyapi.com/api/character/?name=${name}`
+  );
+  if (!res.ok) {
+    throw new Error('Network response was not ok');
+  }
+  const data = await res.json();
+  return data;
+};

@@ -29,11 +29,13 @@ export type FetchCharactersResponse = {
 
 export const fetchCharacters = async (
   page: number,
-  filters: { species: string }
+  filters: { species: string; status: string }
 ): Promise<FetchCharactersResponse> => {
   const speciesQuery = filters.species ? `&species=${filters.species}` : '';
+  const statusQuery = filters.status ? `&status=${filters.status}` : '';
+
   const res = await fetch(
-    `https://rickandmortyapi.com/api/character/?page=${page}&${speciesQuery}`
+    `https://rickandmortyapi.com/api/character/?page=${page}&${speciesQuery}${statusQuery}`
   );
   if (!res.ok) {
     throw new Error('Network response was not ok');

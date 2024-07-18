@@ -23,11 +23,15 @@ export const CharacterList = () => {
   const params = new URLSearchParams(location.search);
   const currentPage = parseInt(params.get('page') || '1', 10);
   const speciesFilter = filterSearchParams.get('species') || '';
+  const statusFilter = filterSearchParams.get('status') || '';
 
   const characterQueryAsync = useQuery<FetchCharactersResponse>({
-    queryKey: ['character', currentPage, speciesFilter],
+    queryKey: ['character', currentPage, speciesFilter, statusFilter],
     queryFn: async () => {
-      return fetchCharacters(currentPage, { species: speciesFilter });
+      return fetchCharacters(currentPage, {
+        species: speciesFilter,
+        status: statusFilter,
+      });
     },
   });
 
@@ -95,7 +99,17 @@ export const CharacterList = () => {
           <details className="flex flex-row">
             <summary className="min-w-24">Status</summary>
             {filterStatus.map((status, index) => (
-              <FilterCheckbox key={index} name={status} />
+              <FilterCheckbox
+                key={index}
+                name={status}
+                checked={status.toLowerCase() === statusFilter}
+                onFilterChange={(e) => {
+                  onFilterChange(
+                    'status',
+                    e.target.checked ? status.toLowerCase() : ''
+                  );
+                }}
+              />
             ))}
           </details>
           <details className="flex flex-row">

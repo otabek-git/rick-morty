@@ -117,8 +117,8 @@ export const CharacterList = () => {
         </div>
       </section>
 
-      <section className="px-3 pt-2 mt-2 border-2 border-solid border-gray-600">
-        <ul className="flex gap-1 text-base flex-wrap items-center justify-center pb-4">
+      <section className="px-3 pt-2 mt-2 ">
+        <ul className="flex gap-1 text-base flex-wrap items-center justify-around border-2 border-solid border-gray-600 pb-4 p-2">
           {activeQueryAsync.data.results.map((character: Character) => (
             <li
               className="shadow-2xl border-solid border-2 bg-[#231f20]  border-gray-600 p-1 flex animate-fadeInUp hover:outline-gray-600 hover:outline-4 hover:outline "

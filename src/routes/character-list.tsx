@@ -1,6 +1,12 @@
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
-import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
+import {
+  Link,
+  Outlet,
+  useLocation,
+  useNavigate,
+  useSearchParams,
+} from 'react-router-dom';
 import {
   Character,
   FetchCharactersResponse,
@@ -11,21 +17,34 @@ import { useDebounce } from '@uidotdev/usehooks';
 import { Loading } from './components/loading';
 
 export const CharacterList = () => {
+  const [filterSearchParams, setFilterSearchParams] = useSearchParams();
   const navigate = useNavigate();
   const location = useLocation();
   const params = new URLSearchParams(location.search);
   const currentPage = parseInt(params.get('page') || '1', 10);
-  console.log(currentPage);
+  const speciesFilter = filterSearchParams.get('species') || '';
 
   const characterQueryAsync = useQuery<FetchCharactersResponse>({
-    queryKey: ['character', currentPage],
+    queryKey: ['character', currentPage, speciesFilter],
     queryFn: async () => {
-      return fetchCharacters(currentPage);
+      return fetchCharacters(currentPage, { species: speciesFilter });
     },
   });
 
-  const [searchByName, setSearchByName] = useState('');
-  const debouncedSearchTerm = useDebounce(searchByName, 300);
+  const onFilterChange = (filterType: any, value: any) => {
+    const newParams = new URLSearchParams(filterSearchParams);
+    if (value) {
+      newParams.set(filterType, value);
+    }
+    if (!value) {
+      newParams.delete(filterType);
+    }
+    setFilterSearchParams(newParams);
+  };
+  const [searchByName, setSearchByName] = useState(() => {
+    return new URLSearchParams(location.search).get('search') || '';
+  });
+  const debouncedSearchTerm = useDebounce(searchByName, 500);
   const searchByNameAsync = useQuery({
     queryKey: ['searchByName', debouncedSearchTerm, currentPage],
     queryFn: async () =>
@@ -33,7 +52,7 @@ export const CharacterList = () => {
     enabled: debouncedSearchTerm.length > 0,
     staleTime: 5000,
   });
-  console.log(searchByNameAsync.data);
+
   const setPage = (newPage: number) => {
     params.set('page', newPage.toString());
     navigate(`?${params.toString()}`);
@@ -48,10 +67,18 @@ export const CharacterList = () => {
   if (!activeQueryAsync.data) {
     return null;
   }
+  console.log(activeQueryAsync.data);
+
+  const filterStatus = ['Alive', 'Dead', 'Unknown'];
+  const filterSpecies = ['Human', 'Alien', 'Humanoid', 'Robot'];
 
   return (
     <>
-      <div className="flex items-center justify-center">
+      <section className="flex items-start justify-between gap-4">
+        <div className="min-w-24">
+          <span className="opacity-0 pr-44">hidden</span>
+          <input type="hidden" />
+        </div>
         <div className="flex mt-4 items-center bg-white  ">
           {/* <Search color="black" width={16} height={16} className="" />   */}
           <input
@@ -63,13 +90,37 @@ export const CharacterList = () => {
           />
         </div>
         {searchByNameAsync.isLoading && <Loading />}
-      </div>
+        <div className="pt-4 flex gap-9">
+          <details className="flex flex-row">
+            <summary className="min-w-24">Status</summary>
+            {filterStatus.map((status, index) => (
+              <FilterCheckbox key={index} name={status} />
+            ))}
+          </details>
+          <details className="flex flex-row">
+            <summary className="min-w-24">Species</summary>
+            {filterSpecies.map((species, index) => (
+              <FilterCheckbox
+                key={index}
+                name={species}
+                checked={species.toLowerCase() === speciesFilter}
+                onFilterChange={(e) =>
+                  onFilterChange(
+                    'species',
+                    e.target.checked ? species.toLowerCase() : ''
+                  )
+                }
+              />
+            ))}
+          </details>
+        </div>
+      </section>
 
-      <section className="px-3 pt-5">
-        <ul className="flex gap-4 text-base flex-wrap items-center justify-center pb-4">
+      <section className="px-3 pt-2 mt-2 border-2 border-solid border-gray-600">
+        <ul className="flex gap-3 text-base flex-wrap items-center justify-center pb-4">
           {activeQueryAsync.data.results.map((character: Character) => (
             <li
-              className="flex animate-fadeInUp hover:outline-orange-400 hover:outline-4 hover:outline hover:text-orange-400"
+              className="shadow-2xl border-solid border-2 bg-[#231f20]  border-gray-600 p-2 flex animate-fadeInUp hover:outline-gray-600 hover:outline-4 hover:outline "
               key={character.id}
             >
               <Link to={`/character/${character.id}`}>
@@ -85,9 +136,9 @@ export const CharacterList = () => {
                       : character.name}
                   </span>
                   <span className="pt-1 hidden md:block">{character.name}</span>
-                  <div className="flex text-xs gap-1 text-cyan-400">
+                  <div className="flex text-xs gap-1">
                     <span> {character.status === 'Alive' ? '❤️' : '💀'}</span>
-                    <span> {character.status}</span>
+                    <span> {character.status} - </span>
                     <span>{character.species}</span>
                   </div>
                 </div>
@@ -117,6 +168,30 @@ export const CharacterList = () => {
         </div>
         <Outlet />
       </section>
+    </>
+  );
+};
+
+type FilterCheckboxProps = {
+  name: string;
+  checked?: boolean;
+  onFilterChange?: (e: any) => void;
+};
+
+const FilterCheckbox = (props: FilterCheckboxProps) => {
+  return (
+    <>
+      <label htmlFor={props.name}>
+        <input
+          type="checkbox"
+          id={props.name}
+          name={props.name.toLowerCase()}
+          value={props.name.toLowerCase()}
+          checked={props.checked}
+          onChange={props.onFilterChange}
+        />
+        {props.name}
+      </label>
     </>
   );
 };

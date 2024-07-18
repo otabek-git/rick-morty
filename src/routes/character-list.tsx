@@ -76,7 +76,7 @@ export const CharacterList = () => {
     <>
       <section className="flex items-center justify-between  flex-col lg:flex-row">
         <div className="min-w-24">
-          <span className="opacity-0 pr-44">hidden</span>
+          <span className="opacity-0 pr-72">hidden</span>
           <input type="hidden" />
         </div>
         <div className="flex mt-4 items-center bg-white  ">
@@ -86,11 +86,11 @@ export const CharacterList = () => {
             placeholder="Search"
             value={searchByName}
             onChange={(e) => setSearchByName(e.target.value)}
-            className="relative z-10 min-w-80"
+            className="relative z-10 min-w-72"
           />
         </div>
         {searchByNameAsync.isLoading && <Loading />}
-        <div className="pt-4 flex gap-8">
+        <div className="pt-4 flex gap-5 pl-4">
           <header>Filter by:</header>
           <details className="flex flex-row">
             <summary className="min-w-24">Status</summary>
@@ -118,10 +118,10 @@ export const CharacterList = () => {
       </section>
 
       <section className="px-3 pt-2 mt-2 border-2 border-solid border-gray-600">
-        <ul className="flex gap-3 text-base flex-wrap items-center justify-center pb-4">
+        <ul className="flex gap-1 text-base flex-wrap items-center justify-center pb-4">
           {activeQueryAsync.data.results.map((character: Character) => (
             <li
-              className="shadow-2xl border-solid border-2 bg-[#231f20]  border-gray-600 p-2 flex animate-fadeInUp hover:outline-gray-600 hover:outline-4 hover:outline "
+              className="shadow-2xl border-solid border-2 bg-[#231f20]  border-gray-600 p-1 flex animate-fadeInUp hover:outline-gray-600 hover:outline-4 hover:outline "
               key={character.id}
             >
               <Link to={`/character/${character.id}`}>
@@ -130,7 +130,7 @@ export const CharacterList = () => {
                   src={character.image}
                   alt=""
                 />
-                <div className=" mt-2 p-1 ">
+                <div className=" mt-2 ">
                   <span className="pt-1 md:hidden">
                     {character.name.length > 12
                       ? character.name.substring(0, 12) + '...'

@@ -86,11 +86,12 @@ export const CharacterList = () => {
             placeholder="Search"
             value={searchByName}
             onChange={(e) => setSearchByName(e.target.value)}
-            className="relative z-10 "
+            className="relative z-10 min-w-80"
           />
         </div>
         {searchByNameAsync.isLoading && <Loading />}
-        <div className="pt-4 flex gap-9">
+        <div className="pt-4 flex gap-8">
+          <header>Filter by:</header>
           <details className="flex flex-row">
             <summary className="min-w-24">Status</summary>
             {filterStatus.map((status, index) => (

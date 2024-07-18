@@ -182,7 +182,7 @@ type FilterCheckboxProps = {
 const FilterCheckbox = (props: FilterCheckboxProps) => {
   return (
     <>
-      <label htmlFor={props.name}>
+      <label className="flex gap-1" htmlFor={props.name}>
         <input
           type="checkbox"
           id={props.name}

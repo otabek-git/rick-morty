@@ -74,7 +74,7 @@ export const CharacterList = () => {
 
   return (
     <>
-      <section className="flex items-start justify-between gap-4">
+      <section className="flex items-center justify-between  flex-col lg:flex-row">
         <div className="min-w-24">
           <span className="opacity-0 pr-44">hidden</span>
           <input type="hidden" />

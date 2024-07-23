@@ -6,7 +6,7 @@ import { Root } from './routes/root.tsx';
 import { ErrorPage } from './error-page.tsx';
 // import { Character } from './routes/character.tsx';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { CharacterList } from './routes/character-list.tsx';
+import { Index } from './routes/index.tsx';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { CharacterDetail } from './routes/character-detail.tsx';
 
@@ -20,7 +20,7 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <CharacterList />,
+        element: <Index />,
       },
       {
         path: '/character/:id',

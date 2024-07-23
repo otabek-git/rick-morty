@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import {
   Character,
@@ -20,10 +20,31 @@ export const Index = () => {
   const statusFilter = searchParams.get('status') || '';
 
   const [searchByName, setSearchByName] = useState(() => {
-    return new URLSearchParams(location.search).get('search') || '';
+    return searchParams.get('search') || '';
   });
 
-  const debouncedSearchTerm = useDebounce(searchByName, 500);
+  const debouncedSearchTerm = useDebounce(searchByName, 700);
+
+  const onSearchChange = (value: string) => {
+    setSearchByName(value);
+    const newParams = new URLSearchParams(searchParams);
+    if (value) {
+      newParams.set('search', value);
+    } else {
+      newParams.delete('search');
+    }
+    setSearchParams(newParams);
+  };
+
+  useEffect(() => {
+    const newParams = new URLSearchParams(searchParams);
+    if (debouncedSearchTerm) {
+      newParams.set('search', debouncedSearchTerm);
+    } else {
+      newParams.delete('search');
+    }
+    setSearchParams(newParams);
+  }, [debouncedSearchTerm, setSearchParams]);
 
   const onFilterChange = (key: string, value: string) => {
     const newParams = new URLSearchParams(searchParams);
@@ -77,7 +98,7 @@ export const Index = () => {
   return (
     <>
       <section className="flex items-center justify-between  flex-col lg:flex-row">
-        <Search searchByName={searchByName} setSearchByName={setSearchByName} />
+        <Search searchByName={searchByName} onSearchChange={onSearchChange} />
         {searchByNameAsync.isLoading && <Loading />}
         <FilterList
           statusFilter={statusFilter}
@@ -186,7 +207,7 @@ const PaginationButton = (props: PaginationButtonProps) => {
 
 type SearchProps = {
   searchByName: string;
-  setSearchByName: (value: string) => void;
+  onSearchChange: (value: string) => void;
 };
 const Search = (props: SearchProps) => {
   return (
@@ -200,7 +221,7 @@ const Search = (props: SearchProps) => {
           type="text"
           placeholder="Search"
           value={props.searchByName}
-          onChange={(e) => props.setSearchByName(e.target.value)}
+          onChange={(e) => props.onSearchChange(e.target.value)}
           className="relative z-10 min-w-72"
         />
       </div>

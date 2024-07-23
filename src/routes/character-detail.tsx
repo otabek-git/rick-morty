@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { useParams } from 'react-router-dom';
-import { fetchCharacterDetailsAsync } from './api/api';
-import { Loading } from './components/loading';
+import { fetchCharacterDetailsAsync } from '../api/api';
+import { Loading } from '../components/loading';
 
 export const CharacterDetail = () => {
   const params = useParams();

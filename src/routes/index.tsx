@@ -6,9 +6,9 @@ import {
   ApiResponse,
   fetchCharactersAsync,
   searchCharacterByNameAsync,
-} from './api/api';
+} from '../api/api';
 import { useDebounce } from '@uidotdev/usehooks';
-import { Loading } from './components/loading';
+import { Loading } from '../components/loading';
 
 const statusItems = ['Alive', 'Dead', 'Unknown'];
 const speciesItems = ['Human', 'Alien', 'Humanoid', 'Robot'];

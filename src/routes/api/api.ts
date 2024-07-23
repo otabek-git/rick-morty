@@ -1,70 +1,77 @@
-export type Character = {
+const BASE_URL = 'https://rickandmortyapi.com/api';
+
+export interface Character {
   id: number;
   name: string;
   status: string;
   species: string;
   image: string;
-};
+}
 
-type CharacterDetails = {
-  id: number;
-  name: string;
-  species: string;
+interface CharacterDetails extends Character {
   origin: {
     name: string;
   };
   location: {
     name: string;
   };
-  image: string;
   created: string;
-};
+}
 
-export type FetchCharactersResponse = {
+export interface ApiResponse {
   info: {
     next: string | null;
   };
   results: Character[];
-};
+}
 
-export const fetchCharacters = async (
+export const fetchCharactersAsync = async (
   page: number,
   filters: { species: string; status: string }
-): Promise<FetchCharactersResponse> => {
-  const speciesQuery = filters.species ? `&species=${filters.species}` : '';
-  const statusQuery = filters.status ? `&status=${filters.status}` : '';
-
-  const res = await fetch(
-    `https://rickandmortyapi.com/api/character/?page=${page}&${speciesQuery}${statusQuery}`
-  );
-  if (!res.ok) {
-    throw new Error('Network response was not ok');
+): Promise<ApiResponse> => {
+  try {
+    const searchParams = new URLSearchParams({ page: page.toString() });
+    for (const [key, value] of Object.entries(filters)) {
+      if (value) searchParams.append(key, value);
+    }
+    const res = await fetch(`${BASE_URL}/character/?${searchParams}`);
+    if (!res.ok) {
+      throw new Error(`API error: ${res.status} ${res.statusText}`);
+    }
+    const data = await res.json();
+    return data;
+  } catch (error) {
+    throw new Error('Failed to fetch characters', { cause: error });
   }
-  const data = await res.json();
-  return data;
 };
 
-export const fetchCharacterDetails = async (
+export const fetchCharacterDetailsAsync = async (
   id: number
 ): Promise<CharacterDetails> => {
-  const res = await fetch(`https://rickandmortyapi.com/api/character/${id}`);
-  if (!res.ok) {
-    throw new Error('Network response was not ok');
+  try {
+    const res = await fetch(`${BASE_URL}/character/${id}`);
+    if (!res.ok) {
+      throw new Error(`API error: ${res.status} ${res.statusText}`);
+    }
+    const data = await res.json();
+    return data;
+  } catch (error) {
+    throw new Error('Failed to fetch character details', { cause: error });
   }
-  const data = await res.json();
-  return data;
 };
 
 export const searchCharacterByNameAsync = async (
   page: number,
   name: string
-) => {
-  const res = await fetch(
-    `https://rickandmortyapi.com/api/character/?page=${page}&name=${name}`
-  );
-  if (!res.ok) {
-    throw new Error('Network response was not ok');
+): Promise<ApiResponse> => {
+  try {
+    const res = await fetch(`${BASE_URL}/character/?page=${page}&name=${name}`);
+    if (!res.ok) {
+      throw new Error(`API error: ${res.status} ${res.statusText}`);
+    }
+    const data = await res.json();
+    return data;
+  } catch (error) {
+    throw new Error('Failed to fetch searched characters', { cause: error });
   }
-  const data = await res.json();
-  return data;
 };

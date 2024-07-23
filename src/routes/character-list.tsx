@@ -9,8 +9,8 @@ import {
 } from 'react-router-dom';
 import {
   Character,
-  FetchCharactersResponse,
-  fetchCharacters,
+  ApiResponse,
+  fetchCharactersAsync,
   searchCharacterByNameAsync,
 } from './api/api';
 import { useDebounce } from '@uidotdev/usehooks';
@@ -24,30 +24,31 @@ export const CharacterList = () => {
   const currentPage = parseInt(params.get('page') || '1', 10);
   const speciesFilter = filterSearchParams.get('species') || '';
   const statusFilter = filterSearchParams.get('status') || '';
-
-  const characterQueryAsync = useQuery<FetchCharactersResponse>({
+  console.log(currentPage);
+  const characterQueryAsync = useQuery<ApiResponse>({
     queryKey: ['character', currentPage, speciesFilter, statusFilter],
     queryFn: async () => {
-      return fetchCharacters(currentPage, {
+      return fetchCharactersAsync(currentPage, {
         species: speciesFilter,
         status: statusFilter,
       });
     },
   });
-
-  const onFilterChange = (filterType: any, value: any) => {
+  console.log(characterQueryAsync.data);
+  const onFilterChange = (name: string, value: string) => {
     const newParams = new URLSearchParams(filterSearchParams);
     if (value) {
-      newParams.set(filterType, value);
+      newParams.set(name, value);
     }
     if (!value) {
-      newParams.delete(filterType);
+      newParams.delete(name);
     }
     setFilterSearchParams(newParams);
   };
   const [searchByName, setSearchByName] = useState(() => {
     return new URLSearchParams(location.search).get('search') || '';
   });
+
   const debouncedSearchTerm = useDebounce(searchByName, 500);
   const searchByNameAsync = useQuery({
     queryKey: ['searchByName', debouncedSearchTerm, currentPage],
@@ -56,6 +57,7 @@ export const CharacterList = () => {
     enabled: debouncedSearchTerm.length > 0,
     staleTime: 5000,
   });
+  console.log(searchByNameAsync.data);
 
   const setPage = (newPage: number) => {
     params.set('page', newPage.toString());

@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { useParams } from 'react-router-dom';
-import { fetchCharacterDetails } from './api/api';
+import { fetchCharacterDetailsAsync } from './api/api';
 import { Loading } from './components/loading';
 
 export const CharacterDetail = () => {
@@ -8,7 +8,7 @@ export const CharacterDetail = () => {
   const characterDetailsQueryAsync = useQuery({
     queryKey: ['CharacterDetail', params.id],
     queryFn: async () => {
-      return fetchCharacterDetails(Number(params.id));
+      return fetchCharacterDetailsAsync(Number(params.id));
     },
   });
   if (characterDetailsQueryAsync.isLoading) {

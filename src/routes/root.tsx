@@ -6,7 +6,7 @@ export const Root = () => {
       <div className="">
         <nav className="flex items-center justify-center bg-white">
           <Link
-            className="text-2xl text-white px-3 py-2 bg-black font-medium"
+            className="text-xl text-white px-3 py-1 bg-black font-medium"
             to="/"
           >
             [adult swim]

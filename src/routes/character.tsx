@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import { fetchCharacterDetailsAsync } from '../api/api';
 import { Loading } from '../components/loading';
 
-export const CharacterDetail = () => {
+export const Character = () => {
   const params = useParams();
   const characterDetailsQueryAsync = useQuery({
     queryKey: ['CharacterDetail', params.id],

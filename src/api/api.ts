@@ -21,6 +21,7 @@ interface CharacterDetails extends Character {
 export interface ApiResponse {
   info: {
     next: string | null;
+    pages: number;
   };
   results: Character[];
 }

@@ -91,7 +91,7 @@ export const Index = () => {
 const CharacterList = (props: { characters: Character[] }) => {
   return (
     <>
-      <ul className="flex gap-1 text-base flex-wrap items-center justify-around border-2 border-solid border-gray-600 pb-4 p-2">
+      <ul className="flex gap-1 text-base flex-wrap items-center justify-around  pb-4 p-2">
         {props.characters.map((character: Character) => (
           <li
             className=" bg-[#231f20]   p-1 flex animate-fadeInUp  "

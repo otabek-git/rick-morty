@@ -4,7 +4,7 @@ export const Root = () => {
   return (
     <>
       <div className="">
-        <nav className="flex items-center justify-center bg-white">
+        <nav className="flex items-center justify-center ">
           <Link
             className="text-xl text-white px-3 py-1 bg-black font-medium"
             to="/"

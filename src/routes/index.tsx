@@ -350,7 +350,7 @@ const PaginationLink = (props: {
   return (
     <NavLink
       to={to}
-      className={`px-2   flex items-center font-medium text-sm  hover:bg-gray-3000    ${
+      className={`px-3 py-1  flex items-center font-medium text-base  hover:bg-gray-3000    ${
         isCurrentPage ? ' text-white outline-2 outline outline-green-600 ' : ''
       }`}
       preventScrollReset
